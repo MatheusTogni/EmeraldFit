@@ -8,7 +8,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:4000',
       'http://127.0.0.1:4000',
-      'https://emerald-fit-front.vercel.app',
+      'https://emerald-fit.vercel.app',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
