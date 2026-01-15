@@ -4,17 +4,25 @@ import { Repository } from 'typeorm';
 import { CreateExercicioTreinoDto } from './dto/create-exercicio-treino.dto';
 import { UpdateExercicioTreinoDto } from './dto/update-exercicio-treino.dto';
 import { ExercicioTreino } from './entities/exercicio-treino.entity';
+import { Treino } from '../treinos/entities/treino.entity';
 
 @Injectable()
 export class ExerciciosTreinoService {
   constructor(
     @InjectRepository(ExercicioTreino)
     private exercicioTreinoRepository: Repository<ExercicioTreino>,
+    @InjectRepository(Treino)
+    private treinoRepository: Repository<Treino>,
   ) {}
 
   async create(createExercicioTreinoDto: CreateExercicioTreinoDto) {
     const exercicio = this.exercicioTreinoRepository.create(createExercicioTreinoDto);
-    return await this.exercicioTreinoRepository.save(exercicio);
+    const savedExercicio = await this.exercicioTreinoRepository.save(exercicio);
+    
+    // Atualizar quantidade de exercícios no treino
+    await this.atualizarQuantidadeExercicios(createExercicioTreinoDto.id_treino);
+    
+    return savedExercicio;
   }
 
   async findByTreino(id_treino: number) {
@@ -36,7 +44,25 @@ export class ExerciciosTreinoService {
   }
 
   async remove(id: number) {
+    const exercicio = await this.findOne(id);
+    const id_treino = exercicio.id_treino;
+    
     await this.exercicioTreinoRepository.delete(id);
+    
+    // Atualizar quantidade de exercícios no treino
+    await this.atualizarQuantidadeExercicios(id_treino);
+    
     return { message: 'Exercício deletado com sucesso' };
+  }
+
+  private async atualizarQuantidadeExercicios(id_treino: number) {
+    const quantidade = await this.exercicioTreinoRepository.count({
+      where: { id_treino },
+    });
+    
+    await this.treinoRepository.update(
+      { id_treino },
+      { quantidade_exercicios: quantidade },
+    );
   }
 }
