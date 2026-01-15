@@ -1,14 +1,27 @@
 <template>
   <v-container fluid class="pa-0" style="background-color: white; min-height: 100vh">
-    <div class="header-section">
-      <div class="d-flex align-center">
-        <v-icon icon="mdi-diamond-stone" size="30" color="white" class="mr-2"></v-icon>
-        <h1 class="text-h4 font-weight-bold" style="color: white">Emerald Fit</h1>
+    <div :class="['header-section', { 'edit-mode-header': modoEdicaoGeral }]">
+      <div class="d-flex align-center justify-space-between">
+        <div class="d-flex align-center">
+          <v-icon icon="mdi-diamond-stone" size="30" color="white" class="mr-2"></v-icon>
+          <h1 class="text-h4 font-weight-bold" style="color: white">Emerald Fit</h1>
+        </div>
+        <v-btn
+          icon
+          variant="text"
+          @click="modoEdicaoGeral = !modoEdicaoGeral"
+          size="large"
+        >
+          <v-icon :color="modoEdicaoGeral ? 'white' : 'white'">
+            {{ modoEdicaoGeral ? 'mdi-close-circle' : 'mdi-cog' }}
+          </v-icon>
+        </v-btn>
       </div>
     </div>
 
     <v-container class="px-4 pb-6">
       <v-btn
+        v-if="!modoEdicaoGeral"
         @click="abrirDialogCriar"
         color="#10b981"
         size="x-large"
@@ -19,23 +32,40 @@
       >
         Criar Treino
       </v-btn>
+      <div v-else class="mb-6 text-center">
+        <h3 class="text-h6 font-weight-bold" style="color: #ef4444">
+          Modo de Edição
+        </h3>
+        <p class="text-body-2" style="color: #64748b">
+          Clique nos treinos para editar ou deletar
+        </p>
+      </div>
 
-      <transition-group name="treino-list" tag="div" v-if="treinos.length > 0" class="treinos-list">
+      <div v-if="loadingTreinos" class="loading-container">
+        <v-progress-circular
+          indeterminate
+          color="#10b981"
+          size="64"
+        ></v-progress-circular>
+        <p class="text-body-1 mt-4" style="color: #64748b">Carregando treinos...</p>
+      </div>
+
+      <transition-group name="treino-list" tag="div" v-else-if="treinos.length > 0" class="treinos-list">
         <v-card
           v-for="treino in treinos"
           :key="treino.id"
           elevation="0"
-          class="workout-card mb-4"
+          :class="['workout-card', 'mb-4', { 'edit-mode': modoEdicaoGeral }]"
         >
           <v-card-text class="pa-5">
             <div class="d-flex align-start mb-4">
-              <div class="workout-icon-container mr-4" @click="abrirTreino(treino.id_treino)">
-                <v-icon :icon="treino.icone_mdi" size="40" color="#10b981"></v-icon>
+              <div :class="['workout-icon-container', 'mr-4', { 'edit-mode': modoEdicaoGeral }]" @click="abrirTreino(treino.id_treino)">
+                <v-icon :icon="treino.icone_mdi" size="40" :class="['treino-icon', { 'edit-mode': modoEdicaoGeral }]"></v-icon>
               </div>
 
               <div class="flex-grow-1" @click="abrirTreino(treino.id_treino)">
                 <div class="d-flex justify-space-between align-center mb-2">
-                  <h3 class="text-h6 font-weight-bold" style="color: #047857">
+                  <h3 :class="['text-h6', 'font-weight-bold', 'treino-titulo', { 'edit-mode': modoEdicaoGeral }]">
                     {{ treino.nome }}
                   </h3>
                 </div>
@@ -49,10 +79,10 @@
                     <v-icon
                       icon="mdi-dumbbell"
                       size="18"
-                      color="#10b981"
+                      :class="['stat-icon', { 'edit-mode': modoEdicaoGeral }]"
                       class="mr-1"
                     ></v-icon>
-                    <span class="text-body-2 font-weight-bold" style="color: #047857">{{
+                    <span :class="['text-body-2', 'font-weight-bold', 'stat-number', { 'edit-mode': modoEdicaoGeral }]">{{
                       treino.quantidade_exercicios
                     }}</span>
                     <span class="text-caption" style="color: #94a3b8; margin-left: 4px"
@@ -74,7 +104,7 @@
                 </div>
               </div>
 
-              <div class="menu-container">
+              <div v-if="modoEdicaoGeral" class="menu-container">
                 <v-menu location="bottom end">
                   <template v-slot:activator="{ props }">
                     <v-btn
@@ -122,7 +152,7 @@
 
       <v-dialog persistent width="600" v-model="dialogTreino">
         <v-card color="white" class="dialog-card">
-          <v-card-title style="background-color: #10b981; color: white; align-items: center; display: flex">
+          <v-card-title :style="{ backgroundColor: modoEdicao ? '#ef4444' : '#10b981', color: 'white', alignItems: 'center', display: 'flex' }">
             <v-icon class="mr-2">{{ modoEdicao ? 'mdi-pencil' : 'mdi-plus-circle' }}</v-icon>
             {{ modoEdicao ? 'Editar Treino' : 'Criar Treino' }}
             <v-spacer/>
@@ -139,7 +169,7 @@
                   clearable
                   hide-details
                   :rules="[v => !!v || 'Título é obrigatório']"
-                  color="#10b981"
+                  :color="modoEdicao ? '#ef4444' : '#10b981'"
                 />
               </v-col>
               <v-col cols="12">
@@ -151,7 +181,7 @@
                   clearable
                   hide-details
                   rows="3"
-                  color="#10b981"
+                  :color="modoEdicao ? '#ef4444' : '#10b981'"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -166,7 +196,7 @@
                   item-title="text"
                   :items="selectStage"
                   :rules="[v => !!v || 'Nível é obrigatório']"
-                  color="#10b981"
+                  :color="modoEdicao ? '#ef4444' : '#10b981'"
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -180,16 +210,16 @@
                   item-value="value"
                   item-title="text"
                   :items="icones"
-                  color="#10b981"
+                  :color="modoEdicao ? '#ef4444' : '#10b981'"
                 >
                   <template v-slot:selection="{ item }">
-                    <v-icon :icon="item.value" size="20" color="#10b981" class="mr-2"></v-icon>
+                    <v-icon :icon="item.value" size="20" :color="modoEdicao ? '#ef4444' : '#10b981'" class="mr-2"></v-icon>
                     {{ item.title }}
                   </template>
                   <template v-slot:item="{ props, item }">
                     <v-list-item v-bind="props">
                       <template v-slot:prepend>
-                        <v-icon :icon="item.value" color="#10b981"></v-icon>
+                        <v-icon :icon="item.value" :color="modoEdicao ? '#ef4444' : '#10b981'"></v-icon>
                       </template>
                     </v-list-item>
                   </template>
@@ -211,7 +241,7 @@
             <v-btn
               @click="salvarTreino"
               variant="flat"
-              color="#10b981"
+              :color="modoEdicao ? '#10b981' : '#10b981'"
               class="text-none"
               style="color: white"
               :disabled="!formTreino.nome || !formTreino.nivel"
@@ -295,30 +325,18 @@
 
       <v-dialog v-model="dialogTreinoFullscreen" fullscreen transition="dialog-bottom-transition">
         <v-card v-if="treinoAtual" color="white">
-          <v-toolbar color="#10b981" style="color: white">
+          <v-toolbar :color="modoEdicaoGeral ? '#ef4444' : '#10b981'" style="color: white">
             <v-btn icon @click="fecharTreinoFullscreen">
               <v-icon color="white">mdi-close</v-icon>
             </v-btn>
             <v-toolbar-title>{{ treinoAtual.nome }}</v-toolbar-title>
           </v-toolbar>
 
-          <v-tabs v-model="tab" color="#10b981" bg-color="white">
-            <v-tab value="exercicios">
-              <v-icon class="mr-2">mdi-dumbbell</v-icon>
-              Exercícios
-            </v-tab>
-            <v-tab value="detalhes">
-              <v-icon class="mr-2">mdi-cog</v-icon>
-              Detalhes
-            </v-tab>
-          </v-tabs>
-
-          <v-window v-model="tab">
-            <v-window-item value="exercicios">
-              <v-container class="pa-4">
+          <v-container class="pa-4">
                 <v-btn
+                  v-if="!modoEdicaoGeral"
                   @click="abrirDialogExercicio"
-                  color="#10b981"
+                  :color="modoEdicaoGeral ? '#ef4444' : '#10b981'"
                   size="large"
                   block
                   class="text-none mb-4"
@@ -327,9 +345,9 @@
                   Adicionar Exercício
                 </v-btn>
 
-                <div v-if="exercicios.length > 0">
+                <transition-group name="exercicio-slide" tag="div" v-if="exerciciosVisiveis.length > 0">
                   <v-card
-                    v-for="(exercicio, index) in exercicios"
+                    v-for="(exercicio, index) in exerciciosVisiveis"
                     :key="exercicio.id_exercicio_treino"
                     elevation="2"
                     class="mb-3"
@@ -337,29 +355,37 @@
                   >
                     <v-card-text class="pa-4">
                       <div class="d-flex align-start">
-                        <div class="exercicio-number mr-3">
-                          <span class="text-h6 font-weight-bold" style="color: #10b981">{{ index + 1 }}</span>
+                        <v-checkbox
+                          v-if="!modoEdicaoGeral"
+                          :model-value="isExercicioConcluido(exercicio.id_exercicio_treino)"
+                          @update:model-value="toggleExercicioConcluido(exercicio.id_exercicio_treino)"
+                          color="#10b981"
+                          hide-details
+                          class="mr-2 mt-0 pt-0"
+                        ></v-checkbox>
+                        <div :class="['exercicio-number', 'mr-3', { 'edit-mode': modoEdicaoGeral }]">
+                          <span :class="['text-h6', 'font-weight-bold', 'exercicio-numero-texto', { 'edit-mode': modoEdicaoGeral }]">{{ index + 1 }}</span>
                         </div>
                         <div class="flex-grow-1">
-                          <h4 class="text-subtitle-1 font-weight-bold mb-2" style="color: #047857">
+                          <h4 :class="['text-subtitle-1', 'font-weight-bold', 'mb-2', 'exercicio-titulo', { 'edit-mode': modoEdicaoGeral }]">
                             {{ exercicio.nome_exercicio }}
                           </h4>
                           <div class="d-flex gap-4">
                             <div class="d-flex align-center">
-                              <v-icon icon="mdi-format-list-numbered" size="18" color="#10b981" class="mr-1"></v-icon>
+                              <v-icon icon="mdi-format-list-numbered" size="18" :class="['exercicio-icon', { 'edit-mode': modoEdicaoGeral }]" class="mr-1"></v-icon>
                               <span class="text-body-2" style="color: #64748b">
                                 <strong>{{ exercicio.series }}</strong> séries
                               </span>
                             </div>
                             <div class="d-flex align-center">
-                              <v-icon icon="mdi-reload" size="18" color="#10b981" class="mr-1"></v-icon>
+                              <v-icon icon="mdi-reload" size="18" :class="['exercicio-icon', { 'edit-mode': modoEdicaoGeral }]" class="mr-1"></v-icon>
                               <span class="text-body-2" style="color: #64748b">
                                 <strong>{{ exercicio.repeticoes }}</strong> reps
                               </span>
                             </div>
                           </div>
                         </div>
-                        <div class="d-flex gap-1">
+                        <div v-if="modoEdicaoGeral" class="d-flex gap-1">
                           <v-btn
                             icon
                             size="small"
@@ -380,7 +406,7 @@
                       </div>
                     </v-card-text>
                   </v-card>
-                </div>
+                </transition-group>
 
                 <div v-else class="empty-state-exercicios">
                   <v-icon icon="mdi-dumbbell" size="80" color="#10b981" class="mb-4"></v-icon>
@@ -391,100 +417,13 @@
                     Adicione exercícios ao seu treino para começar
                   </p>
                 </div>
-              </v-container>
-            </v-window-item>
-
-            <v-window-item value="detalhes">
-              <v-container class="pa-4">
-                <v-card elevation="0" class="pa-4" color="white">
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="treinoAtual.nome"
-                        density="comfortable"
-                        variant="outlined"
-                        label="Título do treino"
-                        clearable
-                        hide-details
-                        color="#10b981"
-                      />
-                    </v-col>
-                    <v-col cols="12">
-                      <v-textarea
-                        v-model="treinoAtual.descricao"
-                        density="comfortable"
-                        variant="outlined"
-                        label="Descrição do treino"
-                        clearable
-                        hide-details
-                        rows="3"
-                        color="#10b981"
-                      />
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-select
-                        v-model="treinoAtual.nivel"
-                        density="comfortable"
-                        variant="outlined"
-                        label="Nível do treino"
-                        clearable
-                        hide-details
-                        item-value="value"
-                        item-title="text"
-                        :items="selectStage"
-                        color="#10b981"
-                      />
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-select
-                        v-model="treinoAtual.icone_mdi"
-                        density="comfortable"
-                        variant="outlined"
-                        label="Ícone"
-                        clearable
-                        hide-details
-                        item-value="value"
-                        item-title="text"
-                        :items="icones"
-                        color="#10b981"
-                      >
-                        <template v-slot:selection="{ item }">
-                          <v-icon :icon="item.value" size="20" color="#10b981" class="mr-2"></v-icon>
-                          {{ item.title }}
-                        </template>
-                        <template v-slot:item="{ props, item }">
-                          <v-list-item v-bind="props">
-                            <template v-slot:prepend>
-                              <v-icon :icon="item.value" color="#10b981"></v-icon>
-                            </template>
-                          </v-list-item>
-                        </template>
-                      </v-select>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-btn
-                        @click="salvarDetalhes"
-                        block
-                        color="#10b981"
-                        size="large"
-                        class="text-none"
-                        :disabled="!treinoAtual.nome || !treinoAtual.nivel"
-                        :loading="loadingSalvarDetalhes"
-                      >
-                        Salvar Alterações
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-container>
-            </v-window-item>
-          </v-window>
+          </v-container>
         </v-card>
       </v-dialog>
 
       <v-dialog v-model="dialogExercicio" persistent width="500">
         <v-card color="white" class="dialog-card">
-          <v-card-title style="background-color: #10b981; color: white; align-items: center; display: flex">
+          <v-card-title :style="{ backgroundColor: modoEdicaoExercicio ? '#ef4444' : '#10b981', color: 'white', alignItems: 'center', display: 'flex' }">
             <v-icon class="mr-2">{{ modoEdicaoExercicio ? 'mdi-pencil' : 'mdi-plus-circle' }}</v-icon>
             {{ modoEdicaoExercicio ? 'Editar Exercício' : 'Adicionar Exercício' }}
             <v-spacer/>
@@ -500,7 +439,7 @@
                   label="Nome do exercício"
                   clearable
                   hide-details
-                  color="#10b981"
+                  :color="modoEdicaoExercicio ? '#ef4444' : '#10b981'"
                   placeholder="Ex: Flexão de braço"
                 />
               </v-col>
@@ -512,7 +451,7 @@
                   label="Séries"
                   clearable
                   hide-details
-                  color="#10b981"
+                  :color="modoEdicaoExercicio ? '#ef4444' : '#10b981'"
                   placeholder="Ex: 3"
                 />
               </v-col>
@@ -524,7 +463,7 @@
                   label="Repetições"
                   clearable
                   hide-details
-                  color="#10b981"
+                  :color="modoEdicaoExercicio ? '#ef4444' : '#10b981'"
                   placeholder="Ex: 10-12"
                 />
               </v-col>
@@ -544,7 +483,7 @@
             <v-btn
               @click="salvarExercicio"
               variant="flat"
-              color="#10b981"
+              :color="modoEdicaoExercicio ? '#10b981' : '#10b981'"
               class="text-none"
               style="color: white"
               :loading="loadingSalvarExercicio"
@@ -568,7 +507,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import api from "@/plugins/axios";
 
 const dialogTreino = ref(false);
@@ -578,6 +517,7 @@ const dialogTreinoFullscreen = ref(false);
 const dialogExercicio = ref(false);
 const modoEdicao = ref(false);
 const modoEdicaoExercicio = ref(false);
+const modoEdicaoGeral = ref(false);
 const treinoParaDeletar = ref(null);
 const exercicioParaDeletar = ref(null);
 const treinoAtual = ref(null);
@@ -623,11 +563,20 @@ const formTreino = ref({
 
 const treinos = ref([]);
 const exercicios = ref([]);
+const loadingTreinos = ref(false);
+const exerciciosConcluidos = ref([]);
 
 const formExercicio = ref({
   nome_exercicio: '',
   series: '',
   repeticoes: '',
+});
+
+const exerciciosVisiveis = computed(() => {
+  if (modoEdicaoGeral.value) {
+    return exercicios.value;
+  }
+  return exercicios.value.filter(ex => !exerciciosConcluidos.value.includes(ex.id_exercicio_treino));
 });
 
 function mostrarToast(mensagem, cor = 'success') {
@@ -641,11 +590,15 @@ onMounted(async () => {
 });
 
 async function carregarTreinos() {
+  loadingTreinos.value = true;
   try {
     const response = await api.get('/treinos/buscar-treinos');
     treinos.value = response.data;
   } catch (error) {
     console.error("Erro ao carregar treinos:", error);
+    mostrarToast('Erro ao carregar treinos', 'error');
+  } finally {
+    loadingTreinos.value = false;
   }
 }
 
@@ -749,11 +702,25 @@ async function carregarExercicios(id_treino) {
   }
 }
 
+function toggleExercicioConcluido(idExercicio) {
+  const index = exerciciosConcluidos.value.indexOf(idExercicio);
+  if (index > -1) {
+    exerciciosConcluidos.value.splice(index, 1);
+  } else {
+    exerciciosConcluidos.value.push(idExercicio);
+  }
+}
+
+function isExercicioConcluido(idExercicio) {
+  return exerciciosConcluidos.value.includes(idExercicio);
+}
+
 function fecharTreinoFullscreen() {
   dialogTreinoFullscreen.value = false;
   setTimeout(() => {
     treinoAtual.value = null;
     exercicios.value = [];
+    exerciciosConcluidos.value = [];
     tab.value = 'exercicios';
   }, 300);
 }
@@ -866,6 +833,11 @@ async function deletarExercicio() {
   background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
   padding: 24px 16px 32px 16px;
   color: white;
+  transition: background 0.5s ease;
+}
+
+.header-section.edit-mode-header {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 }
 
 .create-btn {
@@ -890,6 +862,11 @@ async function deletarExercicio() {
   position: relative;
 }
 
+.workout-card.edit-mode {
+  border-color: #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+}
+
 .workout-card .flex-grow-1,
 .workout-card .workout-icon-container {
   cursor: pointer;
@@ -909,6 +886,47 @@ async function deletarExercicio() {
   justify-content: center;
   min-width: 64px;
   height: 64px;
+  transition: background 0.4s ease;
+}
+
+.workout-icon-container.edit-mode {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.treino-icon {
+  color: #10b981;
+  transition: color 0.4s ease;
+}
+
+.treino-icon.edit-mode {
+  color: #ef4444;
+}
+
+.treino-titulo {
+  color: #047857;
+  transition: color 0.4s ease;
+}
+
+.treino-titulo.edit-mode {
+  color: #dc2626;
+}
+
+.stat-icon {
+  color: #10b981;
+  transition: color 0.4s ease;
+}
+
+.stat-icon.edit-mode {
+  color: #ef4444;
+}
+
+.stat-number {
+  color: #047857;
+  transition: color 0.4s ease;
+}
+
+.stat-number.edit-mode {
+  color: #dc2626;
 }
 
 .stat-item {
@@ -927,6 +945,18 @@ async function deletarExercicio() {
   position: absolute;
   top: 12px;
   right: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .menu-btn {
@@ -1018,5 +1048,68 @@ async function deletarExercicio() {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.4s ease;
+}
+
+.exercicio-number.edit-mode {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.exercicio-numero-texto {
+  color: #10b981;
+  transition: color 0.4s ease;
+}
+
+.exercicio-numero-texto.edit-mode {
+  color: #ef4444;
+}
+
+.exercicio-titulo {
+  color: #047857;
+  transition: color 0.4s ease;
+}
+
+.exercicio-titulo.edit-mode {
+  color: #dc2626;
+}
+
+.exercicio-icon {
+  color: #10b981;
+  transition: color 0.4s ease;
+}
+
+.exercicio-icon.edit-mode {
+  color: #ef4444;
+}
+
+/* Animações de saída do exercício */
+.exercicio-slide-move,
+.exercicio-slide-enter-active,
+.exercicio-slide-leave-active {
+  transition: all 0.5s ease;
+}
+
+.exercicio-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.exercicio-slide-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.exercicio-slide-leave-active {
+  position: absolute;
+  width: calc(100% - 32px);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  min-height: 300px;
 }
 </style>
