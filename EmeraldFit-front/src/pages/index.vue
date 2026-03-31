@@ -232,7 +232,7 @@
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
             <v-spacer></v-spacer>
-            <v-btn @click="dialogDeletar = false" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn @click="dialogDeletar = false" variant="flat" class="text-none cancel-gray-btn">Cancelar</v-btn>
             <v-btn @click="deletarTreino" variant="flat" class="text-none delete-btn" :loading="loadingDeletarTreino">Deletar</v-btn>
           </v-card-actions>
         </v-card>
@@ -251,7 +251,7 @@
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
             <v-spacer></v-spacer>
-            <v-btn @click="dialogDeletarExercicio = false" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn @click="dialogDeletarExercicio = false" variant="flat" class="text-none cancel-gray-btn">Cancelar</v-btn>
             <v-btn @click="deletarExercicio" variant="flat" class="text-none delete-btn" :loading="loadingDeletarExercicio">Deletar</v-btn>
           </v-card-actions>
         </v-card>
@@ -814,7 +814,15 @@ async function deletarExercicio() {
 }
 
 .header-btn.edit-active {
-  color: #ef4444 !important;
+  color: white !important;
+}
+
+.cancel-gray-btn {
+  background: #475569 !important;
+  color: white !important;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0 20px;
 }
 
 /* ── Create button ── */
