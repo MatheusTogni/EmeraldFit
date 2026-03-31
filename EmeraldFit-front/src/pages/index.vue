@@ -741,9 +741,9 @@ async function deletarExercicio() {
 
 /* ── Header ── */
 .header-section {
-  background: linear-gradient(135deg, #0a3d2e 0%, #052e1d 60%, #020420 100%);
+  background: linear-gradient(135deg, #065f46 0%, #047857 60%, #0a3d2e 100%);
   padding: 28px 16px 36px 16px;
-  border-bottom: 1px solid rgba(0, 220, 130, 0.12);
+  border-bottom: 1px solid rgba(0, 220, 130, 0.4);
   transition: background 0.5s ease;
   position: relative;
 }
@@ -756,7 +756,7 @@ async function deletarExercicio() {
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, #00dc82, transparent);
-  opacity: 0.3;
+  opacity: 0.7;
 }
 
 .header-section.edit-mode-header {
@@ -768,8 +768,8 @@ async function deletarExercicio() {
 }
 
 .logo-icon {
-  background: rgba(0, 220, 130, 0.1);
-  border: 1px solid rgba(0, 220, 130, 0.25);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 10px;
   width: 40px;
   height: 40px;
@@ -896,7 +896,7 @@ async function deletarExercicio() {
 /* ── Workout card ── */
 .workout-card {
   background: #0f172a;
-  border: 1px solid rgba(0, 220, 130, 0.15);
+  border: 1px solid rgba(0, 220, 130, 0.5);
   border-radius: 18px;
   cursor: pointer;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
@@ -926,8 +926,8 @@ async function deletarExercicio() {
 }
 
 .workout-icon-wrap {
-  background: rgba(0, 220, 130, 0.08);
-  border: 1px solid rgba(0, 220, 130, 0.15);
+  background: rgba(0, 220, 130, 0.12);
+  border: 1px solid rgba(0, 220, 130, 0.5);
   border-radius: 14px;
   padding: 12px;
   display: flex;
