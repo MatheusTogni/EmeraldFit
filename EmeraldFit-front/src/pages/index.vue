@@ -4,12 +4,12 @@
     <div :class="['header-section', { 'edit-mode-header': modoEdicaoGeral }]">
       <div class="d-flex align-center justify-space-between">
         <div class="d-flex align-center gap-2">
-          <div class="logo-icon">
-            <v-icon icon="mdi-diamond-stone" size="22" color="#00dc82"></v-icon>
+          <div :class="['logo-icon', { 'edit-mode': modoEdicaoGeral }]">
+            <v-icon icon="mdi-diamond-stone" size="22" :color="modoEdicaoGeral ? '#ef4444' : '#00dc82'"></v-icon>
           </div>
           <div>
             <h1 class="app-title">EmeraldFit</h1>
-            <p class="app-subtitle">Seu treino, sua evolução</p>
+            <p :class="['app-subtitle', { 'edit-mode': modoEdicaoGeral }]">Seu treino, sua evolução</p>
           </div>
         </div>
         <v-btn
@@ -760,7 +760,7 @@ async function deletarExercicio() {
 }
 
 .header-section.edit-mode-header {
-  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 60%, #3b0a0a 100%);
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 60%, #7f1d1d 100%);
 }
 
 .header-section.edit-mode-header::after {
@@ -776,6 +776,12 @@ async function deletarExercicio() {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.logo-icon.edit-mode {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
 .app-title {
@@ -791,6 +797,11 @@ async function deletarExercicio() {
   color: rgba(0, 220, 130, 0.7);
   margin: 0;
   line-height: 1;
+  transition: color 0.4s ease;
+}
+
+.app-subtitle.edit-mode {
+  color: rgba(239, 68, 68, 0.8);
 }
 
 .header-btn {
@@ -828,8 +839,8 @@ async function deletarExercicio() {
   display: flex;
   align-items: center;
   padding: 14px 18px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.55);
   border-radius: 14px;
 }
 
@@ -890,7 +901,8 @@ async function deletarExercicio() {
 
 .workout-card.edit-mode {
   cursor: default;
-  border-color: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
 }
 
 .workout-card:not(.edit-mode):hover {
@@ -920,8 +932,8 @@ async function deletarExercicio() {
 }
 
 .workout-icon-wrap.edit-mode {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.6);
 }
 
 .icon-color {
@@ -1149,8 +1161,8 @@ async function deletarExercicio() {
 }
 
 .fullscreen-header.edit-mode-header {
-  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
-  border-bottom-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+  border-bottom-color: rgba(239, 68, 68, 0.5);
 }
 
 .back-btn {
