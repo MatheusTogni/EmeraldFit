@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateExercicioTreinoDto {
   @IsNotEmpty()
@@ -16,4 +16,8 @@ export class CreateExercicioTreinoDto {
   @IsNotEmpty()
   @IsString()
   repeticoes: string;
+
+  @IsOptional()
+  @IsString()
+  carga?: string;
 }

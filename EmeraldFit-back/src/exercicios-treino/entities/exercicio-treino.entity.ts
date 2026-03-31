@@ -18,6 +18,9 @@ export class ExercicioTreino {
   @Column({ type: 'varchar', length: 100 })
   repeticoes: string;
 
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  carga: string;
+
   @ManyToOne(() => Treino)
   @JoinColumn({ name: 'id_treino' })
   treino: Treino;
