@@ -685,7 +685,12 @@ async function salvarExercicio() {
   loadingSalvarExercicio.value = true;
   try {
     if (modoEdicaoExercicio.value) {
-      await api.patch(`/exercicios-treino/atualizar/${exercicioAtual.value.id_exercicio_treino}`, formExercicio.value);
+      await api.patch(`/exercicios-treino/atualizar/${exercicioAtual.value.id_exercicio_treino}`, {
+        nome_exercicio: formExercicio.value.nome_exercicio,
+        series: formExercicio.value.series,
+        repeticoes: formExercicio.value.repeticoes,
+        carga: formExercicio.value.carga || null,
+      });
       mostrarToast('Exercício atualizado com sucesso!', 'success');
     } else {
       await api.post('/exercicios-treino/criar', {
