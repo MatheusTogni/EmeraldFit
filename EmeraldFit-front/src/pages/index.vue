@@ -59,7 +59,7 @@
           v-for="treino in treinos"
           :key="treino.id_treino"
           :class="['workout-card', 'mb-4', { 'edit-mode': modoEdicaoGeral }]"
-          @click="!modoEdicaoGeral && abrirTreino(treino.id_treino)"
+          @click="abrirTreino(treino.id_treino)"
         >
           <div class="workout-card-inner">
             <div :class="['workout-icon-wrap', { 'edit-mode': modoEdicaoGeral }]">
