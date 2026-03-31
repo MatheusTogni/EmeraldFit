@@ -45,6 +45,7 @@ export class ExerciciosTreinoService {
 
   async remove(id: number) {
     const exercicio = await this.findOne(id);
+    if (!exercicio) throw new Error('Exercício não encontrado');
     const id_treino = exercicio.id_treino;
     
     await this.exercicioTreinoRepository.delete(id);
