@@ -760,7 +760,7 @@ async function deletarExercicio() {
 }
 
 .header-section.edit-mode-header {
-  background: linear-gradient(135deg, #3d0a0a 0%, #2e0505 60%, #020420 100%);
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 60%, #3b0a0a 100%);
 }
 
 .header-section.edit-mode-header::after {
@@ -809,7 +809,7 @@ async function deletarExercicio() {
 /* ── Create button ── */
 .create-btn {
   background: linear-gradient(135deg, #00dc82, #00b368) !important;
-  color: #020420 !important;
+  color: white !important;
   font-weight: 700;
   border-radius: 14px;
   height: 54px !important;
@@ -1149,8 +1149,8 @@ async function deletarExercicio() {
 }
 
 .fullscreen-header.edit-mode-header {
-  background: linear-gradient(135deg, #3d0a0a 0%, #2e0505 100%);
-  border-bottom-color: rgba(239, 68, 68, 0.12);
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+  border-bottom-color: rgba(239, 68, 68, 0.3);
 }
 
 .back-btn {
