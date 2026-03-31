@@ -5,7 +5,7 @@
       <div class="d-flex align-center justify-space-between">
         <div class="d-flex align-center gap-2">
           <div :class="['logo-icon', { 'edit-mode': modoEdicaoGeral }]">
-            <v-icon icon="mdi-diamond-stone" size="22" :color="modoEdicaoGeral ? '#ef4444' : '#00dc82'"></v-icon>
+            <v-icon icon="mdi-diamond-stone" size="22" :color="modoEdicaoGeral ? 'white' : '#00dc82'"></v-icon>
           </div>
           <div>
             <h1 class="app-title">EmeraldFit</h1>
@@ -205,7 +205,7 @@
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
             <v-spacer></v-spacer>
-            <v-btn @click="fecharDialog" variant="text" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn @click="fecharDialog" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
             <v-btn
               @click="salvarTreino"
               variant="flat"
@@ -232,7 +232,7 @@
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
             <v-spacer></v-spacer>
-            <v-btn @click="dialogDeletar = false" variant="text" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn @click="dialogDeletar = false" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
             <v-btn @click="deletarTreino" variant="flat" class="text-none delete-btn" :loading="loadingDeletarTreino">Deletar</v-btn>
           </v-card-actions>
         </v-card>
@@ -251,7 +251,7 @@
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
             <v-spacer></v-spacer>
-            <v-btn @click="dialogDeletarExercicio = false" variant="text" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn @click="dialogDeletarExercicio = false" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
             <v-btn @click="deletarExercicio" variant="flat" class="text-none delete-btn" :loading="loadingDeletarExercicio">Deletar</v-btn>
           </v-card-actions>
         </v-card>
@@ -416,7 +416,7 @@
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
             <v-spacer></v-spacer>
-            <v-btn @click="fecharDialogExercicio" variant="text" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn @click="fecharDialogExercicio" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
             <v-btn
               @click="salvarExercicio"
               variant="flat"
@@ -780,8 +780,8 @@ async function deletarExercicio() {
 }
 
 .logo-icon.edit-mode {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .app-title {
@@ -801,7 +801,7 @@ async function deletarExercicio() {
 }
 
 .app-subtitle.edit-mode {
-  color: rgba(239, 68, 68, 0.8);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .header-btn {
@@ -1094,8 +1094,11 @@ async function deletarExercicio() {
 }
 
 .cancel-btn {
-  color: #64748b !important;
-  font-weight: 600;
+  background: #ef4444 !important;
+  color: white !important;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0 20px;
 }
 
 .confirm-btn {
