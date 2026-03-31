@@ -40,10 +40,7 @@
         </v-btn>
         <div v-else class="edit-mode-banner">
           <v-icon color="#ef4444" size="20" class="mr-2">mdi-pencil-circle</v-icon>
-          <div>
-            <p class="edit-mode-title">Modo de Edição</p>
-            <p class="edit-mode-sub">Toque para editar ou deletar</p>
-          </div>
+          <p class="edit-mode-title">Modo de Edição <span class="edit-mode-sub">· Toque para editar ou deletar</span></p>
         </div>
       </div>
 
@@ -287,7 +284,7 @@
               <div
                 v-for="(exercicio, index) in exerciciosVisiveis"
                 :key="exercicio.id_exercicio_treino"
-                :class="['exercicio-card', 'mb-3', { 'done': isExercicioConcluido(exercicio.id_exercicio_treino) }]"
+                :class="['exercicio-card', 'mb-3', { 'done': isExercicioConcluido(exercicio.id_exercicio_treino), 'edit-mode': modoEdicaoGeral }]"
               >
                 <div class="exercicio-inner">
                   <v-checkbox
@@ -867,7 +864,8 @@ async function deletarExercicio() {
 .edit-mode-banner {
   display: flex;
   align-items: center;
-  padding: 14px 18px;
+  height: 54px;
+  padding: 0 18px;
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.55);
   border-radius: 14px;
@@ -881,9 +879,9 @@ async function deletarExercicio() {
 }
 
 .edit-mode-sub {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 400;
   color: rgba(239, 68, 68, 0.6);
-  margin: 0;
 }
 
 /* ── Loading ── */
@@ -1214,6 +1212,10 @@ async function deletarExercicio() {
   margin: 2px 0 0 0;
 }
 
+.fullscreen-header.edit-mode-header .fullscreen-sub {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 .fullscreen-content {
   padding: 20px 16px;
   flex: 1;
@@ -1222,15 +1224,20 @@ async function deletarExercicio() {
 /* ── Exercise card ── */
 .exercicio-card {
   background: #0f172a;
-  border: 1px solid rgba(0, 220, 130, 0.12);
+  border: 1px solid rgba(0, 220, 130, 0.5);
   border-radius: 14px;
   overflow: hidden;
-  transition: border-color 0.3s ease, opacity 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
 }
 
 .exercicio-card.done {
   opacity: 0.4;
   border-color: rgba(0, 220, 130, 0.05);
+}
+
+.exercicio-card.edit-mode {
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
 }
 
 .exercicio-inner {
@@ -1247,8 +1254,8 @@ async function deletarExercicio() {
 }
 
 .ex-number {
-  background: rgba(0, 220, 130, 0.08);
-  border: 1px solid rgba(0, 220, 130, 0.15);
+  background: rgba(0, 220, 130, 0.12);
+  border: 1px solid rgba(0, 220, 130, 0.5);
   border-radius: 8px;
   min-width: 34px;
   height: 34px;
@@ -1260,8 +1267,8 @@ async function deletarExercicio() {
 }
 
 .ex-number.edit-mode {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.6);
 }
 
 .ex-num-text {
@@ -1307,13 +1314,20 @@ async function deletarExercicio() {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 220, 130, 0.06);
+  border: 1px solid rgba(0, 220, 130, 0.25);
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 0.75rem;
-  color: #64748b;
+  color: #94a3b8;
   font-weight: 600;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.exercicio-card.edit-mode .ex-stat-chip {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
 }
 
 .carga-chip {
