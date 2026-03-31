@@ -471,14 +471,35 @@ const selectStage = [
 ];
 
 const icones = [
+  // Grupos musculares
   { text: 'Peito', value: 'mdi-arm-flex' },
   { text: 'Costas', value: 'mdi-weight-lifter' },
   { text: 'Braços', value: 'mdi-arm-flex-outline' },
   { text: 'Pernas', value: 'mdi-run' },
   { text: 'Abdômen', value: 'mdi-ab-testing' },
+  { text: 'Ombros', value: 'mdi-human-handsup' },
+  { text: 'Glúteos', value: 'mdi-human-male' },
   { text: 'Core', value: 'mdi-yoga' },
-  { text: 'Full Body', value: 'mdi-human-handsup' },
+  // Tipos de treino
+  { text: 'Musculação', value: 'mdi-dumbbell' },
+  { text: 'Full Body', value: 'mdi-human' },
   { text: 'Cardio', value: 'mdi-heart-pulse' },
+  { text: 'HIIT', value: 'mdi-fire' },
+  { text: 'Circuito', value: 'mdi-timer-outline' },
+  { text: 'Explosivo', value: 'mdi-lightning-bolt' },
+  { text: 'Calistenia', value: 'mdi-human-handsdown' },
+  { text: 'Alongamento', value: 'mdi-human-male-height-variant' },
+  // Modalidades
+  { text: 'Corrida', value: 'mdi-run-fast' },
+  { text: 'Ciclismo', value: 'mdi-bike' },
+  { text: 'Natação', value: 'mdi-swim' },
+  { text: 'Caminhada', value: 'mdi-walk' },
+  { text: 'Remo', value: 'mdi-rowing' },
+  { text: 'Trilha', value: 'mdi-hiking' },
+  // Objetivos
+  { text: 'Desafio', value: 'mdi-trophy' },
+  { text: 'Competição', value: 'mdi-medal' },
+  { text: 'Descanso', value: 'mdi-sleep' },
 ];
 
 const formTreino = ref({
