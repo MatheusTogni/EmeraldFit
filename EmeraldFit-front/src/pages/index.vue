@@ -1067,7 +1067,7 @@ async function deletarExercicio() {
 
 .dialog-header {
   background: linear-gradient(135deg, #00dc82, #00b368);
-  color: #020420;
+  color: white;
   font-weight: 700;
   font-size: 0.95rem;
   padding: 14px 16px;
@@ -1100,7 +1100,7 @@ async function deletarExercicio() {
 
 .confirm-btn {
   background: linear-gradient(135deg, #00dc82, #00b368) !important;
-  color: #020420 !important;
+  color: white !important;
   font-weight: 700;
   border-radius: 10px;
   padding: 0 20px;
