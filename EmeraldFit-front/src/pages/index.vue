@@ -285,12 +285,15 @@
                 v-for="(exercicio, index) in exerciciosVisiveis"
                 :key="exercicio.id_exercicio_treino"
                 :class="['exercicio-card', 'mb-3', { 'done': isExercicioConcluido(exercicio.id_exercicio_treino), 'edit-mode': modoEdicaoGeral }]"
+                @click="!modoEdicaoGeral && abrirDialogCarga(exercicio)"
+                :style="!modoEdicaoGeral ? 'cursor: pointer' : ''"
               >
                 <div class="exercicio-inner">
                   <v-checkbox
                     v-if="!modoEdicaoGeral"
                     :model-value="isExercicioConcluido(exercicio.id_exercicio_treino)"
                     @update:model-value="toggleExercicioConcluido(exercicio.id_exercicio_treino)"
+                    @click.stop
                     color="#00dc82"
                     hide-details
                     class="ex-check"
@@ -321,10 +324,10 @@
                   </div>
 
                   <div v-if="modoEdicaoGeral" class="ex-actions">
-                    <v-btn icon size="small" variant="text" @click="editarExercicio(exercicio)">
+                    <v-btn icon size="small" variant="text" @click.stop="editarExercicio(exercicio)">
                       <v-icon color="#00dc82" size="18">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn icon size="small" variant="text" @click="confirmarDeletarExercicio(exercicio)">
+                    <v-btn icon size="small" variant="text" @click.stop="confirmarDeletarExercicio(exercicio)">
                       <v-icon color="#ef4444" size="18">mdi-delete-outline</v-icon>
                     </v-btn>
                   </div>
@@ -426,8 +429,71 @@
         </v-card>
       </v-dialog>
 
+      <!-- Dialog: Treino em andamento -->
+      <v-dialog v-model="dialogTreinoAndamento" max-width="400">
+        <v-card class="dark-dialog">
+          <div class="dialog-header edit-header">
+            <v-icon class="mr-2" size="20">mdi-alert-circle-outline</v-icon>
+            <span>Treino em andamento</span>
+          </div>
+          <v-card-text class="pt-5">
+            <p class="confirm-text">Você já tem um treino em andamento.</p>
+            <p class="confirm-sub">Quer mesmo iniciar outro? O progresso atual será perdido.</p>
+          </v-card-text>
+          <v-card-actions class="px-5 pb-5">
+            <v-spacer></v-spacer>
+            <v-btn @click="cancelarTrocarTreino" variant="flat" class="text-none cancel-gray-btn">Não</v-btn>
+            <v-btn @click="confirmarTrocarTreino" variant="flat" class="text-none delete-btn">Sim</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Dialog: Editar Carga -->
+      <v-dialog v-model="dialogCarga" persistent width="340">
+        <v-card class="dark-dialog">
+          <div class="dialog-header" style="background: linear-gradient(135deg, #f59e0b22, #f59e0b11); border-bottom: 1px solid #f59e0b44;">
+            <v-icon class="mr-2" size="20" color="#f59e0b">mdi-weight-kilogram</v-icon>
+            <span style="color: #f59e0b">Editar Carga</span>
+            <v-spacer />
+            <v-btn icon variant="text" size="small" @click="dialogCarga = false">
+              <v-icon size="20">mdi-close</v-icon>
+            </v-btn>
+          </div>
+          <v-card-text class="pt-5 pb-2">
+            <p class="text-caption mb-3" style="color: #9ca3af">{{ exercicioParaCarga?.nome_exercicio }}</p>
+            <v-text-field
+              v-model="cargaTemp"
+              density="comfortable"
+              variant="outlined"
+              label="Carga"
+              clearable
+              hide-details
+              color="#f59e0b"
+              placeholder="Ex: 20kg"
+              prepend-inner-icon="mdi-weight-kilogram"
+              class="dark-field"
+              autofocus
+              @keyup.enter="salvarCarga"
+            />
+          </v-card-text>
+          <v-card-actions class="px-5 pb-5">
+            <v-spacer></v-spacer>
+            <v-btn @click="dialogCarga = false" variant="flat" class="text-none cancel-btn">Cancelar</v-btn>
+            <v-btn
+              @click="salvarCarga"
+              variant="flat"
+              class="text-none confirm-btn"
+              style="background: #f59e0b !important; color: #000 !important"
+              :loading="loadingSalvarCarga"
+            >
+              Salvar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" location="top" rounded="lg">
-        {{ snackbarText }}
+        <span style="color: white">{{ snackbarText }}</span>
       </v-snackbar>
     </v-container>
   </v-container>
@@ -460,6 +526,25 @@ const loadingDeletarTreino = ref(false);
 const loadingSalvarExercicio = ref(false);
 const loadingDeletarExercicio = ref(false);
 const loadingSalvarDetalhes = ref(false);
+const loadingSalvarCarga = ref(false);
+const dialogCarga = ref(false);
+const exercicioParaCarga = ref(null);
+const cargaTemp = ref('');
+const dialogTreinoAndamento = ref(false);
+const treinoParaAbrir = ref(null);
+const treinoEmAndamentoId = ref(null);
+
+function salvarProgressoStore() {
+  localStorage.setItem('emeraldfit_treino_id', String(treinoEmAndamentoId.value));
+  localStorage.setItem('emeraldfit_concluidos', JSON.stringify(exerciciosConcluidos.value));
+}
+
+function limparProgressoStore() {
+  localStorage.removeItem('emeraldfit_treino_id');
+  localStorage.removeItem('emeraldfit_concluidos');
+  treinoEmAndamentoId.value = null;
+  exerciciosConcluidos.value = [];
+}
 
 const selectStage = [
   { text: 'Iniciante', value: 'Iniciante' },
@@ -532,6 +617,10 @@ function mostrarToast(mensagem, cor = 'success') {
 
 onMounted(async () => {
   await carregarTreinos();
+  const savedId = localStorage.getItem('emeraldfit_treino_id');
+  const savedConcluidos = localStorage.getItem('emeraldfit_concluidos');
+  if (savedId) treinoEmAndamentoId.value = parseInt(savedId);
+  if (savedConcluidos) exerciciosConcluidos.value = JSON.parse(savedConcluidos);
 });
 
 async function carregarTreinos() {
@@ -612,16 +701,43 @@ async function deletarTreino() {
 }
 
 async function abrirTreino(id) {
+  if (treinoEmAndamentoId.value && treinoEmAndamentoId.value !== id) {
+    treinoParaAbrir.value = id;
+    dialogTreinoAndamento.value = true;
+    return;
+  }
+  await _executarAbrirTreino(id);
+}
+
+async function _executarAbrirTreino(id) {
   try {
     const response = await api.get(`/treinos/${id}`);
     treinoAtual.value = response.data;
     await carregarExercicios(id);
+    if (treinoEmAndamentoId.value !== id) {
+      exerciciosConcluidos.value = [];
+    }
+    treinoEmAndamentoId.value = id;
+    salvarProgressoStore();
     tab.value = 'exercicios';
     dialogTreinoFullscreen.value = true;
   } catch (error) {
     console.error("Erro ao carregar treino:", error);
     mostrarToast('Erro ao carregar treino', 'error');
   }
+}
+
+function confirmarTrocarTreino() {
+  const id = treinoParaAbrir.value;
+  limparProgressoStore();
+  treinoParaAbrir.value = null;
+  dialogTreinoAndamento.value = false;
+  _executarAbrirTreino(id);
+}
+
+function cancelarTrocarTreino() {
+  treinoParaAbrir.value = null;
+  dialogTreinoAndamento.value = false;
 }
 
 async function carregarExercicios(id_treino) {
@@ -640,6 +756,14 @@ function toggleExercicioConcluido(idExercicio) {
   } else {
     exerciciosConcluidos.value.push(idExercicio);
   }
+  const todosConcluidos = exercicios.value.length > 0 &&
+    exercicios.value.every(ex => exerciciosConcluidos.value.includes(ex.id_exercicio_treino));
+  if (todosConcluidos) {
+    limparProgressoStore();
+    mostrarToast('Treino finalizado! Parabéns! 💪', 'success');
+  } else {
+    salvarProgressoStore();
+  }
 }
 
 function isExercicioConcluido(idExercicio) {
@@ -651,7 +775,6 @@ function fecharTreinoFullscreen() {
   setTimeout(() => {
     treinoAtual.value = null;
     exercicios.value = [];
-    exerciciosConcluidos.value = [];
     tab.value = 'exercicios';
   }, 300);
 }
@@ -724,6 +847,34 @@ async function salvarExercicio() {
     mostrarToast('Erro ao salvar exercício', 'error');
   } finally {
     loadingSalvarExercicio.value = false;
+  }
+}
+
+function abrirDialogCarga(exercicio) {
+  exercicioParaCarga.value = exercicio;
+  cargaTemp.value = exercicio.carga || '';
+  dialogCarga.value = true;
+}
+
+async function salvarCarga() {
+  if (!exercicioParaCarga.value) return;
+  loadingSalvarCarga.value = true;
+  try {
+    await api.patch(`/exercicios-treino/atualizar/${exercicioParaCarga.value.id_exercicio_treino}`, {
+      nome_exercicio: exercicioParaCarga.value.nome_exercicio,
+      series: exercicioParaCarga.value.series,
+      repeticoes: exercicioParaCarga.value.repeticoes,
+      carga: cargaTemp.value || null,
+    });
+    await carregarExercicios(treinoAtual.value.id_treino);
+    mostrarToast('Carga atualizada!', 'success');
+    dialogCarga.value = false;
+    exercicioParaCarga.value = null;
+  } catch (error) {
+    console.error("Erro ao salvar carga:", error);
+    mostrarToast('Erro ao salvar carga', 'error');
+  } finally {
+    loadingSalvarCarga.value = false;
   }
 }
 
