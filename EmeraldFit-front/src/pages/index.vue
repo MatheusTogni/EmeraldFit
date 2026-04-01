@@ -437,7 +437,7 @@
             <span>Treino em andamento</span>
           </div>
           <v-card-text class="pt-5">
-            <p class="confirm-text">Você já tem um treino em andamento.</p>
+            <p class="confirm-text">Você já tem o treino <strong style="color: white">{{ treinos.find(t => t.id_treino === treinoEmAndamentoId)?.nome }}</strong> em andamento.</p>
             <p class="confirm-sub">Quer mesmo iniciar outro? O progresso atual será perdido.</p>
           </v-card-text>
           <v-card-actions class="px-5 pb-5">
