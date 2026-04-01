@@ -761,6 +761,7 @@ function toggleExercicioConcluido(idExercicio) {
   if (todosConcluidos) {
     limparProgressoStore();
     mostrarToast('Treino finalizado! Parabéns! 💪', 'success');
+    setTimeout(() => fecharTreinoFullscreen(), 1200);
   } else {
     salvarProgressoStore();
   }
